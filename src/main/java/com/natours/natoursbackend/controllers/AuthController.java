@@ -1,5 +1,7 @@
 package com.natours.natoursbackend.controllers;
 
+import com.natours.natoursbackend.dto.LoginRequest;
+import com.natours.natoursbackend.dto.LoginResponse;
 import com.natours.natoursbackend.dto.RegisterRequest;
 import com.natours.natoursbackend.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,4 +21,11 @@ public class AuthController {
         authService.register(registerRequest);
         return "User Registration Successful";
     }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public LoginResponse login(@RequestBody LoginRequest loginRequest){
+        return authService.login(loginRequest);
+    }
+
 }
