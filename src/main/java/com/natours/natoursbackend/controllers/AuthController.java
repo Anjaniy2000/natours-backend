@@ -17,6 +17,6 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public String register(@RequestBody RegisterRequest registerRequest) throws Exception {
         authService.register(registerRequest);
-        return "User Registration Success";
+        return "User Registration Completes";
     }
 }
