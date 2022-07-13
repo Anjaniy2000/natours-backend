@@ -9,4 +9,3 @@ spring:
     mongodb:
       uri: mongodb+srv://anjaniy:SalekarAnjaniy@cluster0.nawzwbt.mongodb.net/?retryWrites=true&w=majority
       database: natours-db
-
