@@ -1,5 +1,4 @@
 package com.natours.natoursbackend.config;
-
 import com.natours.natoursbackend.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +21,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
-                .cors().disable()
                 .authorizeRequests()
                 .antMatchers("/auth/**")
                 .permitAll()
