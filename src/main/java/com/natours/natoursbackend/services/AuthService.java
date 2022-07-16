@@ -11,7 +11,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
@@ -55,14 +56,14 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-        UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
-        String token = jwtUtilities.generateToken(userDetails);
-
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+                loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        String token = jwtUtilities.generateToken(authenticate);
         return LoginResponse.builder()
-                .email(loginRequest.getEmail())
                 .authenticationToken(token)
-                .expiresAt(jwtUtilities.extractExpiration(token))
+                .expiresAt(Instant.now().plusMillis(jwtUtilities.getJwtExpirationInMillis()))
+                .email(loginRequest.getEmail())
                 .build();
     }
 }

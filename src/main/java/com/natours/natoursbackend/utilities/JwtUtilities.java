@@ -1,5 +1,6 @@
 package com.natours.natoursbackend.utilities;
 
+import com.natours.natoursbackend.exceptions.KeyStoreExceptions;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,45 +12,112 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Service;
+
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import io.jsonwebtoken.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.time.Instant;
+
+import static io.jsonwebtoken.Jwts.parser;
+import static java.util.Date.from;
+
 @Service
 public class JwtUtilities {
 
-    private final String SECRET_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJpZCI6IjVjOWYzYWI2NzY2Mjg2NDYyNDY0YTczNCIsIm5hbWUiOiJSYW5keSIsImF2YXRhciI6Ii8vd3d3LmdyYXZhdGFyLmNvbS9hdmF0YXIvMTNhN2MyYzdkOGVkNTNkMDc2MzRkOGNlZWVkZjM0NTEcz0yMDAmcj1wZyZkPW1tIiwiaWF0IjoxNTU0NTIxNjk1LCJleHAiOjE1NTQ1MjUyOTV9SxRurShXSSI3SE11z6nme9EoaD29TDBFr8Qwngkg";
+    private KeyStore keyStore;
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    @Value("${jwt.expiration.time}")
+    private Long jwtExpirationInMillis;
+
+    @PostConstruct
+    public void init() throws KeyStoreException {
+        try {
+            keyStore = KeyStore.getInstance("JKS");
+            InputStream resourceAsStream = getClass().getResourceAsStream("/natours_secret_key.jks");
+            keyStore.load(resourceAsStream, "Anjaniy@12345".toCharArray());
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
+            throw new KeyStoreExceptions("Exception occurred while loading keystore!");
+        }
+
     }
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public String generateToken(Authentication authentication) {
+        User principal = (User) authentication.getPrincipal();
+        return Jwts.builder()
+                .setSubject(principal.getUsername())
+                .signWith(getPrivateKey())
+                .setExpiration(from(Instant.now().plusMillis(jwtExpirationInMillis)))
+                .compact();
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-    }
-
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public String generateTokenWithUserName(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(from(Instant.now()))
+                .signWith(getPrivateKey())
+                .setExpiration(from(Instant.now().plusMillis(jwtExpirationInMillis)))
+                .compact();
     }
 
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
+    private PrivateKey getPrivateKey() {
+        try {
+            return (PrivateKey) keyStore.getKey("natours", "Anjaniy@12345".toCharArray());
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+            throw new KeyStoreExceptions("Exception occurred while retrieving public key from keystore!");
+        }
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
-
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+    public boolean validateToken(String Jwt){
+        parser().setSigningKey(getPublicKey()).parseClaimsJws(Jwt);
+        return true;
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    private PublicKey getPublicKey() {
+        try {
+            return keyStore.getCertificate("natours").getPublicKey();
+        } catch (KeyStoreException e) {
+            throw new KeyStoreExceptions("Exception occurred while retrieving public key from keystore!");
+        }
+    }
+
+    public String getUsernameFromJwt(String token) {
+        Claims claims = parser()
+                .setSigningKey(getPublicKey())
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
+    }
+
+    public Long getJwtExpirationInMillis() {
+        return jwtExpirationInMillis;
     }
 }

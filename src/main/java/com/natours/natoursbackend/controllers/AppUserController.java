@@ -22,6 +22,6 @@ public class AppUserController {
      @DeleteMapping("/delete/{id}")
      @ResponseStatus(HttpStatus.OK)
      public String delete(@PathVariable("id") String id){
-        return "User deleted Successfully";
+        return "User Deleted Successfully";
      }
 }

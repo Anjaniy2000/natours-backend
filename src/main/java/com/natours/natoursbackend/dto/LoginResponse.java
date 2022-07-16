@@ -13,5 +13,5 @@ import java.util.Date;
 public class LoginResponse {
     private String email;
     private String authenticationToken;
-    private Date expiresAt;
+    private Instant expiresAt;
 }
