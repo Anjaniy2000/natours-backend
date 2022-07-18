@@ -5,8 +5,8 @@ import com.natours.natoursbackend.dto.LoginResponse;
 import com.natours.natoursbackend.exceptions.UserAlreadyPresentException;
 import com.natours.natoursbackend.dto.RegisterRequest;
 import com.natours.natoursbackend.models.AppUser;
-import com.natours.natoursbackend.repositories.UserRepository;
-import com.natours.natoursbackend.utilities.JwtUtilities;
+import com.natours.natoursbackend.repositories.AppUserRepository;
+import com.natours.natoursbackend.security.JwtUtilities;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class AuthService {
 
     @Autowired
-    private UserRepository userRepository;
+    private AppUserRepository appUserRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -41,14 +41,14 @@ public class AuthService {
 
     public void register(RegisterRequest registerRequest) throws Exception {
 
-        Optional<AppUser> appUserOptional = userRepository.findByEmail(registerRequest.getEmail());
+        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(registerRequest.getEmail());
         if(appUserOptional.isEmpty()){
             AppUser appUser = new AppUser();
             appUser.setName(registerRequest.getName());
             appUser.setEmail(registerRequest.getEmail());
             appUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
             appUser.setCreatedDate(Instant.now());
-            userRepository.save(appUser);
+            appUserRepository.save(appUser);
         }else{
             throw new UserAlreadyPresentException("User Is Already Present With The Given Email Address:- " + registerRequest.getEmail());
         }

@@ -1,6 +1,6 @@
 package com.natours.natoursbackend.config;
 import com.natours.natoursbackend.services.UserDetailsServiceImpl;
-import com.natours.natoursbackend.utilities.JwtAuthenticationFilter;
+import com.natours.natoursbackend.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,11 +23,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private static final String WHITELIST_ENDPOINTS[] = {"/auth/**"};
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/auth/**")
+                .antMatchers(WHITELIST_ENDPOINTS)
                 .permitAll()
                 .anyRequest()
                 .authenticated();

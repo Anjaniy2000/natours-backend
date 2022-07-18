@@ -2,7 +2,7 @@ package com.natours.natoursbackend.services;
 
 import com.natours.natoursbackend.exceptions.UserNotFoundException;
 import com.natours.natoursbackend.models.AppUser;
-import com.natours.natoursbackend.repositories.UserRepository;
+import com.natours.natoursbackend.repositories.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,11 +17,11 @@ import java.util.Optional;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private AppUserRepository appUserRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<AppUser> appUserOptional = userRepository.findByEmail(email);
+        Optional<AppUser> appUserOptional = appUserRepository.findByEmail(email);
         AppUser appUser = appUserOptional.orElseThrow(() -> new UserNotFoundException("User Not Found With The Given Email Address:- " + email));
         return new User(appUser.getEmail(), appUser.getPassword(), new ArrayList<>());
     }
