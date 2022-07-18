@@ -24,7 +24,13 @@ public class AppUserService {
 
         return modelMapper.map(appUser, AppUserDto.class);
     }
+
+
     public void update(AppUserDto appUserDto) {
         appUserRepository.save(modelMapper.map(appUserDto,AppUser.class));
+    }
+
+    public void delete(String id) {
+        appUserRepository.deleteById(id);
     }
 }
