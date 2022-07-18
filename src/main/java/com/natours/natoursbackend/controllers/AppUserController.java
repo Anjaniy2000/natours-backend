@@ -1,6 +1,9 @@
 package com.natours.natoursbackend.controllers;
 
 import com.natours.natoursbackend.dto.AppUserDto;
+import com.natours.natoursbackend.repositories.AppUserRepository;
+import com.natours.natoursbackend.services.AppUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,16 +11,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/profile")
 public class AppUserController {
 
+    @Autowired
+    private AppUserService appUserService;
+
     @GetMapping("/view")
     @ResponseStatus(HttpStatus.OK)
     public AppUserDto view(){
-        return null;
+        return appUserService.getCurrentUser();
     }
 
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public AppUserDto update(@RequestBody AppUserDto appUserDto){
-        return null;
+    public void update(@RequestBody AppUserDto appUserDto){
+        appUserService.update(appUserDto);
     }
      @DeleteMapping("/delete/{id}")
      @ResponseStatus(HttpStatus.OK)
