@@ -33,7 +33,7 @@ public class JwtUtilities {
             InputStream resourceAsStream = getClass().getResourceAsStream("/natours_secret_key.jks");
             keyStore.load(resourceAsStream, "Anjaniy@12345".toCharArray());
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
-            throw new KeyStoreExceptions("Exception occurred while loading keystore!");
+            throw new KeyStoreExceptions("Exception Occurred While Loading Keystore!");
         }
 
     }
@@ -60,7 +60,7 @@ public class JwtUtilities {
         try {
             return (PrivateKey) keyStore.getKey("natours", "Anjaniy@12345".toCharArray());
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
-            throw new KeyStoreExceptions("Exception occurred while retrieving public key from keystore!");
+            throw new KeyStoreExceptions("Exception Occurred While Retrieving Private Key From Keystore!");
         }
     }
 
@@ -73,7 +73,7 @@ public class JwtUtilities {
         try {
             return keyStore.getCertificate("natours").getPublicKey();
         } catch (KeyStoreException e) {
-            throw new KeyStoreExceptions("Exception occurred while retrieving public key from keystore!");
+            throw new KeyStoreExceptions("Exception Occurred While Retrieving Public Key From Keystore!");
         }
     }
 
