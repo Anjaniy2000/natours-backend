@@ -23,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private static final String WHITELIST_ENDPOINTS[] = {"/auth/**"};
+    private static final String[] WHITELIST_ENDPOINTS = {"/auth/**"};
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
