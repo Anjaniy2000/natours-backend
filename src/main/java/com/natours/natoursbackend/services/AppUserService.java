@@ -1,7 +1,7 @@
 package com.natours.natoursbackend.services;
 
 import com.natours.natoursbackend.dto.AppUserDto;
-import com.natours.natoursbackend.dto.PasswdDto;
+import com.natours.natoursbackend.dto.PasswordDto;
 import com.natours.natoursbackend.exceptions.PasswordExceptions;
 import com.natours.natoursbackend.exceptions.UserNotFoundException;
 import com.natours.natoursbackend.models.AppUser;
@@ -40,16 +40,13 @@ public class AppUserService {
         appUserRepository.deleteById(id);
     }
 
-    public void changePwd(PasswdDto passwdDto) {
-        AppUser appUser=modelMapper.map(getCurrentUser(),AppUser.class );
-        if(passwordEncoder.matches(passwdDto.getOldPasswd(), appUser.getPassword()))
-        {
-            appUser.setPassword(passwordEncoder.encode(passwdDto.getNewPasswd()));
+    public void changePwd(PasswordDto passwordDto) {
+        AppUser appUser = modelMapper.map(getCurrentUser(), AppUser.class);
+        if(passwordEncoder.matches(passwordDto.getOldPassword(), appUser.getPassword())){
+            appUser.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
             appUserRepository.save(appUser);
+        }else{
+            throw new PasswordExceptions("Given Old Password Is Incorrect!");
         }
-        else{
-         throw new PasswordExceptions("Ols password is incorrect");
-        }
-
     }
 }

@@ -1,7 +1,7 @@
 package com.natours.natoursbackend.controllers;
 
 import com.natours.natoursbackend.dto.AppUserDto;
-import com.natours.natoursbackend.dto.PasswdDto;
+import com.natours.natoursbackend.dto.PasswordDto;
 import com.natours.natoursbackend.services.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,17 +26,17 @@ public class AppUserController {
         appUserService.update(appUserDto);
     }
 
-     @DeleteMapping("/delete/{id}")
-     @ResponseStatus(HttpStatus.OK)
-     public String delete(@PathVariable("id") String id){
+    @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public String delete(@PathVariable("id") String id){
         appUserService.delete(id);
         return "User Deleted Successfully";
-     }
-     @PostMapping("/changePwd")
-     @ResponseStatus(HttpStatus.OK)
-    public String changePwd(@RequestBody PasswdDto passwdDto){
-        appUserService.changePwd(passwdDto);
-        return "Password Successfully Changed ";
-     }
+    }
 
+    @PostMapping("/changePwd")
+    @ResponseStatus(HttpStatus.OK)
+    public String changePwd(@RequestBody PasswordDto passwordDto){
+        appUserService.changePwd(passwordDto);
+        return "Password Changed Successfully";
+    }
 }
