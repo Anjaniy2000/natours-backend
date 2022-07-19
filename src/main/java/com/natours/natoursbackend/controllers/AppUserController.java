@@ -1,6 +1,7 @@
 package com.natours.natoursbackend.controllers;
 
 import com.natours.natoursbackend.dto.AppUserDto;
+import com.natours.natoursbackend.dto.PasswdDto;
 import com.natours.natoursbackend.services.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,4 +32,11 @@ public class AppUserController {
         appUserService.delete(id);
         return "User Deleted Successfully";
      }
+     @PostMapping("/changePwd")
+     @ResponseStatus(HttpStatus.OK)
+    public String changePwd(@RequestBody PasswdDto passwdDto){
+        appUserService.changePwd(passwdDto);
+        return "Password Successfully Changed ";
+     }
+
 }
