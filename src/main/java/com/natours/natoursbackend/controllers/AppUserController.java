@@ -22,8 +22,9 @@ public class AppUserController {
 
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestBody AppUserDto appUserDto){
+    public String update(@RequestBody AppUserDto appUserDto){
         appUserService.update(appUserDto);
+        return "User Updated Successfully";
     }
 
     @DeleteMapping("/delete/{id}")
