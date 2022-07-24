@@ -1,9 +1,6 @@
 package com.natours.natoursbackend.dto;
-
-
 import com.natours.natoursbackend.models.Location;
 import com.natours.natoursbackend.models.StartLocation;
-import com.natours.natoursbackend.models.TourGuide;
 import lombok.*;
 
 import java.util.List;
@@ -46,5 +43,5 @@ public class TourDto {
 
     private StartLocation startLocation;
 
-    private List<TourGuide> tourGuides;
+    private String[] tourGuides;
 }

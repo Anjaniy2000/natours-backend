@@ -12,16 +12,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/tour")
 public class TourController {
+
     @Autowired
     private TourService tourService;
- @GetMapping("/getalltours")
- @ResponseStatus(HttpStatus.OK)
+
+
+    @GetMapping("/getAllTours")
+    @ResponseStatus(HttpStatus.OK)
     public List<TourDto> getAllTours(){
-     return tourService.getAllTours();
- }
- @GetMapping("/gettourbyid/{tourId}")
+        return tourService.getAllTours();
+    }
+
+    @GetMapping("/getTourById/{tourId}")
     @ResponseStatus(HttpStatus.OK)
     public TourDto getTourById(@PathVariable("tourId") String tourId){
-     return tourService.getToursById(tourId);
- }
+        return tourService.getTourById(tourId);
+    }
 }

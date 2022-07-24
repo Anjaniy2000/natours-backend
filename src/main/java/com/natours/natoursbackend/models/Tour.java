@@ -16,6 +16,7 @@ import java.util.List;
 public class Tour {
 
     @Id
+    @Field("_id")
     private String id;
 
     @Field("name")
@@ -61,5 +62,5 @@ public class Tour {
     private StartLocation startLocation;
 
     @Field("guides")
-    private List<TourGuide> tourGuides;
+    private String[] tourGuides;
 }
