@@ -10,8 +10,9 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
-public class LoginResponse {
+public class AuthenticationResponse {
     private String email;
     private String authenticationToken;
+    private String refreshToken;
     private Instant expiresAt;
 }

@@ -1,7 +1,8 @@
 package com.natours.natoursbackend.services;
 
 import com.natours.natoursbackend.dto.LoginRequest;
-import com.natours.natoursbackend.dto.LoginResponse;
+import com.natours.natoursbackend.dto.AuthenticationResponse;
+import com.natours.natoursbackend.dto.RefreshTokenRequest;
 import com.natours.natoursbackend.exceptions.UserAlreadyPresentException;
 import com.natours.natoursbackend.dto.RegisterRequest;
 import com.natours.natoursbackend.models.AppUser;
@@ -39,6 +40,9 @@ public class AuthService {
     @Autowired
     private JwtUtilities jwtUtilities;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     public void register(RegisterRequest registerRequest) throws Exception {
 
         Optional<AppUser> appUserOptional = appUserRepository.findByEmail(registerRequest.getEmail());
@@ -55,16 +59,32 @@ public class AuthService {
 
     }
 
-    public LoginResponse login(LoginRequest loginRequest) {
+    public AuthenticationResponse login(LoginRequest loginRequest) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
                 loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String token = jwtUtilities.generateToken(authenticate);
-        return LoginResponse.builder()
+        return AuthenticationResponse.builder()
                 .authenticationToken(token)
+                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
                 .expiresAt(Instant.now().plusMillis(jwtUtilities.getJwtExpirationInMillis()))
                 .email(loginRequest.getEmail())
                 .build();
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtUtilities.generateTokenWithEmail(refreshTokenRequest.getEmail());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(jwtUtilities.getJwtExpirationInMillis()))
+                .email(refreshTokenRequest.getEmail())
+                .build();
+    }
+
+    public void logout(String refreshToken) {
+        refreshTokenService.deleteRefreshToken(refreshToken);
     }
 }
 /*

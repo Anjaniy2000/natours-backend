@@ -47,9 +47,9 @@ public class JwtUtilities {
                 .compact();
     }
 
-    public String generateTokenWithUserName(String username) {
+    public String generateTokenWithEmail(String email) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(from(Instant.now()))
                 .signWith(getPrivateKey())
                 .setExpiration(from(Instant.now().plusMillis(jwtExpirationInMillis)))
