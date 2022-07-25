@@ -24,12 +24,13 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public void validateRefreshToken(String token) {
-        refreshTokenRepository.findByToken(token)
+    public void validateRefreshToken(String refreshToken) {
+        refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new InvalidRefreshTokenException("Invalid Refresh Token!"));
     }
 
-    public void deleteRefreshToken(String token) {
-        refreshTokenRepository.deleteByToken(token);
+    //for logout:
+    public void deleteRefreshToken(String refreshToken) {
+        refreshTokenRepository.deleteByToken(refreshToken);
     }
 }
